@@ -31,13 +31,34 @@ Version
 
 `1.0.0-SNAPSHOT`
 
-Making this project
-===================
+Compiling and Running
+=====================
 
-```
+This project makes use of [Maven][1] for depedency management and compilling, please make sure Maven is installed and that you have [JDK 1.8.][2] or higher installed before running the following commands.
+
+```sh
 mvn clean install
-java -jar ./target/ICAPRG414A-1.0.0-SNAPSHOT.jar
+java -jar ./target/ICAPRG414A-(VERSION).jar
 ```
+
+Screenshots
+===========
+
+##### Main Interface
+
+[![Main Interface](https://github.com/LiamHaworth/ICAPRG414A/raw/master/screenshots/MainInterface.png)]
+
+##### Add New Job
+
+[![Add New Job](https://github.com/LiamHaworth/ICAPRG414A/raw/master/screenshots/AddNewJobInterface.png)]
+
+##### Edit Job
+
+[![Edit Job](https://github.com/LiamHaworth/ICAPRG414A/raw/master/screenshots/EditJobInterface.png)]
+
+##### Delete Job
+
+[![Delete Job](https://github.com/LiamHaworth/ICAPRG414A/raw/master/screenshots/DeleteJobConfirmation.png)]
 
 Contributing
 ============

@@ -1,6 +1,6 @@
-package au.id.haworth.liam.ICAPRG414A.interfaces;
+package au.id.haworth.ICAPRG414A.interfaces;
 
-import au.id.haworth.liam.ICAPRG414A.JobRegister;
+import au.id.haworth.ICAPRG414A.JobRegister;
 
 import javax.swing.*;
 import java.text.DateFormat;
