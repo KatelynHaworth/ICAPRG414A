@@ -8,7 +8,7 @@ The purpose of the application is to allow users to have a application with a gr
 A job is made up of the follow attributes
 
 | Attribute             | Type             | Description                                                |
-|:-----------------------------------------|:-----------------------------------------------------------|
+|:----------------------|:-----------------|:-----------------------------------------------------------|
 | ID                    | Integer          | Unique ID number representing a Job object                 |
 | Name                  | String           | The first name of the client for the Job                   |
 | Surename              | String           | the surname of the client for the Job                      |
