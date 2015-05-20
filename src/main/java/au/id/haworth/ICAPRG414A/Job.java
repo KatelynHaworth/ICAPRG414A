@@ -89,6 +89,18 @@ public class Job {
 
             throws IllegalArgumentException {
 
+        if(name == null || name.equals("") || surname == null || surname.equals(""))
+            throw new IllegalArgumentException("First and surname fields can not be empty or null");
+
+        if(address == null || address.equals(""))
+            throw new IllegalArgumentException("Address can not be empty ot null");
+
+        if(suburb == null || suburb.equals(""))
+            throw new IllegalArgumentException("Suburb can not be empty or null");
+
+        if(jobDetails == null || jobDetails.equals(""))
+            throw new IllegalArgumentException("A job must contain details (field is either empty or null)");
+
         if(jobID < 0)
             throw new IllegalArgumentException("Job ID cannot be less than 0");
 

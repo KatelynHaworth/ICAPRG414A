@@ -1,5 +1,11 @@
 package au.id.haworth.ICAPRG414A;
 
+import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
+
+import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.TreeMap;
@@ -116,5 +122,61 @@ public class JobRegister {
      */
     public static Job removeJobFromRegister(int jobID) {
         return idToJobMap.remove(jobID);
+    }
+
+    public static void saveJobsToFile(File selectedFile) {
+        if(!selectedFile.getName().endsWith(".jobs"))
+            selectedFile = new File(selectedFile.getParentFile(), selectedFile.getName() + ".jobs");
+
+        Gson gson = new Gson();
+        Object[] jobsArray = idToJobMap.values().toArray();
+
+        String jsonArray = gson.toJson(jobsArray);
+
+        try {
+            BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(selectedFile));
+            outputStream.write(jsonArray.getBytes("UTF-8"));
+            outputStream.flush();
+            outputStream.close();
+        }
+        catch(IOException ex) {
+            throw new RuntimeException("Failed to save data file!", ex);
+        }
+    }
+
+    public static void loadJobsFromFile(File selectedFile) {
+        try {
+            byte[] jsonArrayData = new byte[(int) selectedFile.length()];
+            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(selectedFile));
+
+            if(inputStream.read(jsonArrayData) != jsonArrayData.length)
+                throw new IOException("Failed to read all data from file!");
+
+            inputStream.close();
+
+            Gson gson = new Gson();
+            String jsonArray = new String(jsonArrayData);
+
+            Object[] jobsArray = gson.fromJson(jsonArray, Object[].class);
+
+            for(Object jobObject : jobsArray) {
+                LinkedTreeMap jobData = (LinkedTreeMap) jobObject;
+
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a");
+                Date date = dateFormat.parse((String) jobData.get("date"));
+
+                Job job = new Job(((Double) jobData.get("jobID")).intValue(),
+                                  (String) jobData.get("name"), (String) jobData.get("surname"), (String) jobData.get("address"), (String) jobData.get("suburb"), ((Double) jobData.get("postcode")).intValue(),
+                                  date, ((Double) jobData.get("hoursWorked")).intValue(), (String) jobData.get("jobDetails"), (boolean) jobData.get("completed"), ((Double) jobData.get("price")).intValue(), (boolean) jobData.get("paid"));
+
+                idToJobMap.put(job.getJobID(), job);
+            }
+        }
+        catch(IOException ex) {
+            throw new RuntimeException("Failed to read data file!", ex);
+        }
+        catch(ParseException ex) {
+            throw new RuntimeException("Failed to build date object from data file data", ex);
+        }
     }
 }

@@ -4,8 +4,12 @@ import au.id.haworth.ICAPRG414A.Job;
 import au.id.haworth.ICAPRG414A.JobRegister;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
 /**
  * The main interface is for users to view
@@ -43,9 +47,62 @@ public class MainInterface extends JFrame {
         buildInterface();
     }
 
+    private void saveToFile() {
+        JFileChooser saveFileChooser = new JFileChooser();
+        saveFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        saveFileChooser.setFileFilter(new JobsFileFilter());
+
+        int result = saveFileChooser.showSaveDialog(this);
+
+        if(result == JFileChooser.CANCEL_OPTION)
+            return;
+
+        JobRegister.saveJobsToFile(saveFileChooser.getSelectedFile());
+    }
+
+    private void loadFromFile() {
+        JFileChooser loadFileChooser = new JFileChooser();
+        loadFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        loadFileChooser.setFileFilter(new JobsFileFilter());
+
+        int result = loadFileChooser.showOpenDialog(this);
+
+        if(result == JFileChooser.CANCEL_OPTION)
+            return;
+
+        JobRegister.loadJobsFromFile(loadFileChooser.getSelectedFile());
+
+        this.rebuildTable();
+    }
+
     private void buildInterface() {
         JPanel mainContent = new JPanel();
         this.setContentPane(mainContent);
+
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+
+        JMenuItem saveDataMenuItem = new JMenuItem("Save To File");
+        saveDataMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveToFile();
+            }
+        });
+
+        JMenuItem loadDataMenuItem = new JMenuItem("Load From File");
+        loadDataMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loadFromFile();
+            }
+        });
+
+        fileMenu.add(saveDataMenuItem);
+        fileMenu.add(loadDataMenuItem);
+        menuBar.add(fileMenu);
+
+        this.setJMenuBar(menuBar);
 
         JLabel windowTitle = new JLabel("Jobs List");
         windowTitle.setHorizontalAlignment(SwingConstants.CENTER);
@@ -58,27 +115,36 @@ public class MainInterface extends JFrame {
         tablePane.getViewport().add(jobsList);
 
         JButton addJob = new JButton("Add New Job");
-        addJob.addActionListener(e -> {
-            AddJob addJobDialog = new AddJob(this);
-            addJobDialog.displayWindow();
+        addJob.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AddJob addJobDialog = new AddJob(instance);
+                addJobDialog.displayWindow();
+            }
         });
 
         JButton editJob = new JButton("Edit Job");
-        editJob.addActionListener(e -> {
-            int jobId = (int) jobsList.getModel().getValueAt(jobsList.getSelectedRow(), 0);
+        editJob.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int jobId = (int) jobsList.getModel().getValueAt(jobsList.getSelectedRow(), 0);
 
-            EditJob editJobDialog = new EditJob(this, jobId);
-            editJobDialog.displayWindow();
+                EditJob editJobDialog = new EditJob(instance, jobId);
+                editJobDialog.displayWindow();
+            }
         });
 
         JButton deleteJob = new JButton("Delete Job");
-        deleteJob.addActionListener(e -> {
-            int jobId = (int) jobsList.getModel().getValueAt(jobsList.getSelectedRow(), 0);
-            int selection = JOptionPane.showConfirmDialog(instance, "Are you sure you want to delete?", "Job Deletion Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        deleteJob.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int jobId = (int) jobsList.getModel().getValueAt(jobsList.getSelectedRow(), 0);
+                int selection = JOptionPane.showConfirmDialog(instance, "Are you sure you want to delete?", "Job Deletion Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-            if(selection == JOptionPane.YES_OPTION) {
-                JobRegister.removeJobFromRegister(jobId);
-                rebuildTable();
+                if (selection == JOptionPane.YES_OPTION) {
+                    JobRegister.removeJobFromRegister(jobId);
+                    rebuildTable();
+                }
             }
         });
 
@@ -128,5 +194,26 @@ public class MainInterface extends JFrame {
         }
 
         this.jobsList.setModel(dataModel);
+    }
+
+
+    class JobsFileFilter extends FileFilter {
+
+        @Override
+        public boolean accept(File f) {
+            if(f.isDirectory())
+                return false;
+
+
+            if(!f.getAbsolutePath().endsWith(".jobs"))
+                return false;
+
+            return true;
+        }
+
+        @Override
+        public String getDescription() {
+            return "Jobs File";
+        }
     }
 }

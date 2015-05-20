@@ -4,6 +4,8 @@ import au.id.haworth.ICAPRG414A.Job;
 import au.id.haworth.ICAPRG414A.JobRegister;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -75,43 +77,51 @@ public class EditJob extends JDialog {
         jobPaid.setSelected(job.isPaid());
 
         JButton saveButton = new JButton("Save Changes");
-        saveButton.addActionListener(e -> {
-            try {
-                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-                Date completeDateValue = dateFormat.parse(completeDate.getText());
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                    Date completeDateValue = dateFormat.parse(completeDate.getText());
 
-                int postcode, hours, price;
+                    int postcode, hours, price;
 
-                if(clientPostcode.getValue() instanceof Long)
-                    postcode = ((Long) clientPostcode.getValue()).intValue();
-                else
-                    postcode = (int) clientPostcode.getValue();
+                    if(clientPostcode.getValue() instanceof Long)
+                        postcode = ((Long) clientPostcode.getValue()).intValue();
+                    else
+                        postcode = (int) clientPostcode.getValue();
 
-                if(hoursWorked.getValue() instanceof Long)
-                    hours = ((Long) hoursWorked.getValue()).intValue();
-                else
-                    hours = (int) hoursWorked.getValue();
+                    if(hoursWorked.getValue() instanceof Long)
+                        hours = ((Long) hoursWorked.getValue()).intValue();
+                    else
+                        hours = (int) hoursWorked.getValue();
 
-                if(jobPrice.getValue() instanceof Long)
-                    price = ((Long) jobPrice.getValue()).intValue();
-                else
-                    price = (int) jobPrice.getValue();
+                    if(jobPrice.getValue() instanceof Long)
+                        price = ((Long) jobPrice.getValue()).intValue();
+                    else
+                        price = (int) jobPrice.getValue();
 
-                JobRegister.updateJob(job.getJobID(), clientFirstName.getText(), clientSurname.getText(), clientAddress.getText(), clientSuburb.getText(), postcode,
-                                      completeDateValue, hours, jobDetails.getText(), jobCompleted.isSelected(), price, jobPaid.isSelected());
+                    JobRegister.updateJob(job.getJobID(), clientFirstName.getText(), clientSurname.getText(), clientAddress.getText(), clientSuburb.getText(), postcode,
+                            completeDateValue, hours, jobDetails.getText(), jobCompleted.isSelected(), price, jobPaid.isSelected());
 
-                parent.rebuildTable();
+                    parent.rebuildTable();
 
-                dispose();
-            } catch (IllegalArgumentException ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage(), "There was an error saving job", JOptionPane.ERROR_MESSAGE);
-            } catch (ParseException ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage(), "There was an error saving job", JOptionPane.ERROR_MESSAGE);
+                    dispose();
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "There was an error saving job", JOptionPane.ERROR_MESSAGE);
+                } catch (ParseException ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "There was an error saving job", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
         JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(e -> dispose());
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
 
         GroupLayout layout = new GroupLayout(this.getContentPane());
         getContentPane().setLayout(layout);
